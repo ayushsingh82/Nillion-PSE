@@ -1,5 +1,12 @@
 import { Keypair } from '@nillion/nuc';
 import browser from 'webextension-polyfill';
+import { 
+  ActivityType, 
+  startActivity, 
+  completeActivity, 
+  addSubStep,
+  logActivity as logEnhancedActivity
+} from './activityLogger';
 
 export interface Document {
   id: string;
@@ -63,28 +70,57 @@ export class NillionService {
       throw new Error('Service not initialized');
     }
 
-    const document: Document = {
-      id: this.generateId(),
-      title,
-      content,
-      createdAt: new Date().toISOString(),
-      owner: this.userKeypair.toDid().toString()
-    };
+    // Start tracking activity with sub-steps
+    const activityId = await startActivity(
+      ActivityType.DOCUMENT_CREATED,
+      `Creating document "${title}"`,
+      { title, contentLength: content.length },
+      this.userKeypair.toDid().toString()
+    );
 
-    // Store in browser storage
-    await this.storeDocument(document);
-    
-    // Log activity
-    await this.logActivity({
-      id: this.generateId(),
-      type: 'document_created',
-      documentId: document.id,
-      timestamp: new Date().toISOString(),
-      details: `Created document "${title}"`
-    });
+    try {
+      // Sub-step 1: Generate document ID
+      await addSubStep(activityId, 'Generating unique document ID', 'in_progress');
+      const docId = this.generateId();
+      await addSubStep(activityId, `Document ID generated: ${docId}`, 'completed', { documentId: docId });
 
-    console.log('📝 Document created:', document.id);
-    return document;
+      // Sub-step 2: Create document object
+      await addSubStep(activityId, 'Creating document structure', 'in_progress');
+      const document: Document = {
+        id: docId,
+        title,
+        content,
+        createdAt: new Date().toISOString(),
+        owner: this.userKeypair.toDid().toString()
+      };
+      await addSubStep(activityId, 'Document structure created', 'completed');
+
+      // Sub-step 3: Store in browser storage
+      await addSubStep(activityId, 'Storing document in secure storage', 'in_progress');
+      await this.storeDocument(document);
+      await addSubStep(activityId, 'Document stored successfully', 'completed');
+
+      // Sub-step 4: Log activity
+      await addSubStep(activityId, 'Logging activity', 'in_progress');
+      await this.logActivity({
+        id: this.generateId(),
+        type: 'document_created',
+        documentId: document.id,
+        timestamp: new Date().toISOString(),
+        details: `Created document "${title}"`
+      });
+      await addSubStep(activityId, 'Activity logged', 'completed');
+
+      // Complete the activity
+      await completeActivity(activityId, 'success');
+
+      console.log('📝 Document created:', document.id);
+      return document;
+    } catch (error) {
+      await addSubStep(activityId, `Error: ${error instanceof Error ? error.message : 'Unknown error'}`, 'failed');
+      await completeActivity(activityId, 'failed');
+      throw error;
+    }
   }
 
   async listDocuments(): Promise<Document[]> {
@@ -126,30 +162,56 @@ export class NillionService {
       throw new Error('Service not initialized');
     }
 
-    const result = await browser.storage.local.get('nillion_documents');
-    const documents: Document[] = result.nillion_documents || [];
-    const userDid = this.userKeypair.toDid().toString();
-    
-    const documentIndex = documents.findIndex(doc => doc.id === documentId && doc.owner === userDid);
-    if (documentIndex === -1) {
-      throw new Error('Document not found or unauthorized');
+    // Start tracking activity with sub-steps
+    const activityId = await startActivity(
+      ActivityType.DOCUMENT_DELETED,
+      `Deleting document ${documentId}`,
+      { documentId },
+      this.userKeypair.toDid().toString()
+    );
+
+    try {
+      // Sub-step 1: Locate document
+      await addSubStep(activityId, 'Locating document in storage', 'in_progress');
+      const result = await browser.storage.local.get('nillion_documents');
+      const documents: Document[] = result.nillion_documents || [];
+      const userDid = this.userKeypair.toDid().toString();
+      
+      const documentIndex = documents.findIndex(doc => doc.id === documentId && doc.owner === userDid);
+      if (documentIndex === -1) {
+        await addSubStep(activityId, 'Document not found or unauthorized', 'failed');
+        await completeActivity(activityId, 'failed');
+        throw new Error('Document not found or unauthorized');
+      }
+      await addSubStep(activityId, 'Document located', 'completed');
+
+      // Sub-step 2: Remove from storage
+      await addSubStep(activityId, 'Removing document from storage', 'in_progress');
+      const document = documents[documentIndex];
+      documents.splice(documentIndex, 1);
+      await browser.storage.local.set({ nillion_documents: documents });
+      await addSubStep(activityId, 'Document removed from storage', 'completed');
+
+      // Sub-step 3: Log activity
+      await addSubStep(activityId, 'Logging deletion activity', 'in_progress');
+      await this.logActivity({
+        id: this.generateId(),
+        type: 'document_deleted',
+        documentId,
+        timestamp: new Date().toISOString(),
+        details: `Deleted document "${document.title}"`
+      });
+      await addSubStep(activityId, 'Activity logged', 'completed');
+
+      // Complete the activity
+      await completeActivity(activityId, 'success');
+
+      console.log('🗑️ Document deleted:', documentId);
+    } catch (error) {
+      await addSubStep(activityId, `Error: ${error instanceof Error ? error.message : 'Unknown error'}`, 'failed');
+      await completeActivity(activityId, 'failed');
+      throw error;
     }
-
-    const document = documents[documentIndex];
-    documents.splice(documentIndex, 1);
-    
-    await browser.storage.local.set({ nillion_documents: documents });
-
-    // Log activity
-    await this.logActivity({
-      id: this.generateId(),
-      type: 'document_deleted',
-      documentId,
-      timestamp: new Date().toISOString(),
-      details: `Deleted document "${document.title}"`
-    });
-
-    console.log('🗑️ Document deleted:', documentId);
   }
 
   async grantPermission(documentId: string, granteeDid: string, permissions: { read?: boolean; write?: boolean; execute?: boolean }): Promise<void> {
@@ -157,28 +219,61 @@ export class NillionService {
       throw new Error('Service not initialized');
     }
 
-    const permission: Permission = {
-      documentId,
-      grantee: granteeDid,
-      read: permissions.read || false,
-      write: permissions.write || false,
-      execute: permissions.execute || false,
-      grantedAt: new Date().toISOString()
-    };
+    // Start tracking activity with sub-steps
+    const activityId = await startActivity(
+      ActivityType.PERMISSION_GRANTED,
+      `Granting permissions for document ${documentId}`,
+      { documentId, grantee: granteeDid, permissions },
+      this.userKeypair.toDid().toString()
+    );
 
-    await this.storePermission(permission);
+    try {
+      // Sub-step 1: Validate permissions
+      await addSubStep(activityId, 'Validating permission request', 'in_progress');
+      const permTypes = [];
+      if (permissions.read) permTypes.push('read');
+      if (permissions.write) permTypes.push('write');
+      if (permissions.execute) permTypes.push('execute');
+      await addSubStep(activityId, `Permissions to grant: ${permTypes.join(', ')}`, 'completed');
 
-    // Log activity
-    await this.logActivity({
-      id: this.generateId(),
-      type: 'permission_granted',
-      documentId,
-      grantee: granteeDid,
-      timestamp: new Date().toISOString(),
-      details: `Granted permissions to ${granteeDid}`
-    });
+      // Sub-step 2: Create permission object
+      await addSubStep(activityId, 'Creating permission record', 'in_progress');
+      const permission: Permission = {
+        documentId,
+        grantee: granteeDid,
+        read: permissions.read || false,
+        write: permissions.write || false,
+        execute: permissions.execute || false,
+        grantedAt: new Date().toISOString()
+      };
+      await addSubStep(activityId, 'Permission record created', 'completed');
 
-    console.log('🔑 Permission granted:', permission);
+      // Sub-step 3: Store permission
+      await addSubStep(activityId, 'Storing permission in secure storage', 'in_progress');
+      await this.storePermission(permission);
+      await addSubStep(activityId, 'Permission stored successfully', 'completed');
+
+      // Sub-step 4: Log activity
+      await addSubStep(activityId, 'Logging permission grant', 'in_progress');
+      await this.logActivity({
+        id: this.generateId(),
+        type: 'permission_granted',
+        documentId,
+        grantee: granteeDid,
+        timestamp: new Date().toISOString(),
+        details: `Granted permissions to ${granteeDid}`
+      });
+      await addSubStep(activityId, 'Activity logged', 'completed');
+
+      // Complete the activity
+      await completeActivity(activityId, 'success');
+
+      console.log('🔑 Permission granted:', permission);
+    } catch (error) {
+      await addSubStep(activityId, `Error: ${error instanceof Error ? error.message : 'Unknown error'}`, 'failed');
+      await completeActivity(activityId, 'failed');
+      throw error;
+    }
   }
 
   async revokePermission(documentId: string, granteeDid: string): Promise<void> {

@@ -6,6 +6,7 @@ import { Keypair } from '@nillion/nuc';
 import { authService } from '../services/authService';
 import { AuthSetupModal, AuthUnlockModal, QRDisplayModal } from './AuthComponents';
 import { PersonalInfoTab } from './PersonalInfoTab';
+import { ActivityLogTab } from './ActivityLogTab';
 
 interface UserIdentity {
   did: string;
@@ -997,54 +998,7 @@ export const Dashboard: React.FC = () => {
         )}
 
         {activeTab === 'activity' && (
-          <div className="space-y-4">
-            <h3 className="font-semibold">Activity Log</h3>
-            
-            {!activityLogs || activityLogs.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <p className="text-sm">No activity yet</p>
-                <p className="text-xs">Your document and permission activities will appear here</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {activityLogs.map((log) => {
-                  // Safe guard against malformed log entries
-                  if (!log || !log.id || !log.type) {
-                    return null;
-                  }
-                  
-                  return (
-                    <div key={String(log.id)} className="border rounded p-3 bg-white">
-                      <div className="flex items-start space-x-3">
-                        <div className={`w-2 h-2 rounded-full mt-2 ${
-                          log.type === 'document_created' ? 'bg-green-500' :
-                          log.type === 'document_deleted' ? 'bg-red-500' :
-                          log.type === 'permission_granted' ? 'bg-blue-500' :
-                          log.type === 'permission_revoked' ? 'bg-orange-500' :
-                          'bg-gray-500'
-                        }`}></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            {log.type === 'document_created' && 'Document Created'}
-                            {log.type === 'document_deleted' && 'Document Deleted'}
-                            {log.type === 'permission_granted' && 'Permission Granted'}
-                            {log.type === 'permission_revoked' && 'Permission Revoked'}
-                            {log.type === 'document_accessed' && 'Document Accessed'}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {typeof log.details === 'string' ? log.details : 'No details available'}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {log.timestamp ? new Date(log.timestamp).toLocaleString() : 'Unknown time'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          <ActivityLogTab />
         )}
 
         {activeTab === 'profile' && (

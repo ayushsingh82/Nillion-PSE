@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import browser from 'webextension-polyfill';
 import { PersonalInfo, savePersonalInfo, getPersonalInfo, clearPersonalInfo, generateAutofillScript } from '../services/personalInfoService';
+import { ActivityType, startActivity, completeActivity, addSubStep } from '../services/activityLogger';
 
 interface PersonalInfoTabProps {
   onUpdate?: () => void;
@@ -105,133 +106,168 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({ onUpdate }) =>
   };
 
   const handleAutofill = async () => {
+    // Start tracking activity
+    const activityId = await startActivity(
+      ActivityType.AUTOFILL_EXECUTED,
+      'Executing form autofill',
+      { 
+        hasPersonalInfo: hasPersonalInfo,
+        fields: Object.keys(personalInfo).filter(k => personalInfo[k as keyof PersonalInfo])
+      }
+    );
+
     try {
-      // Get current active tab
+      // Sub-step 1: Get active tab
+      await addSubStep(activityId, 'Getting active tab', 'in_progress');
       const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-      if (tabs[0]?.id) {
-        const suggestions = {
-          firstName: personalInfo.firstName,
-          lastName: personalInfo.lastName,
-          email: personalInfo.email,
-          phone: personalInfo.phone,
-          street: personalInfo.address.street,
-          city: personalInfo.address.city,
-          state: personalInfo.address.state,
-          zipCode: personalInfo.address.zipCode,
-          country: personalInfo.address.country,
-          company: personalInfo.company,
-          jobTitle: personalInfo.jobTitle,
-          website: personalInfo.website,
-          dateOfBirth: personalInfo.dateOfBirth
-        };
+      
+      if (!tabs[0]?.id) {
+        await addSubStep(activityId, 'No active tab found', 'failed');
+        await completeActivity(activityId, 'failed');
+        setError('No active tab found');
+        return;
+      }
+      
+      await addSubStep(activityId, `Active tab found: ${tabs[0].url}`, 'completed', { tabId: tabs[0].id, url: tabs[0].url });
+
+      // Sub-step 2: Prepare autofill data
+      await addSubStep(activityId, 'Preparing autofill data', 'in_progress');
+      const suggestions = {
+        firstName: personalInfo.firstName,
+        lastName: personalInfo.lastName,
+        email: personalInfo.email,
+        phone: personalInfo.phone,
+        street: personalInfo.address.street,
+        city: personalInfo.address.city,
+        state: personalInfo.address.state,
+        zipCode: personalInfo.address.zipCode,
+        country: personalInfo.address.country,
+        company: personalInfo.company,
+        jobTitle: personalInfo.jobTitle,
+        website: personalInfo.website,
+        dateOfBirth: personalInfo.dateOfBirth
+      };
+      const nonEmptyFields = Object.values(suggestions).filter(v => v).length;
+      await addSubStep(activityId, `Prepared ${nonEmptyFields} fields for autofill`, 'completed');
         
-        // Use chrome.scripting.executeScript for Manifest V3
-        if (browser.scripting) {
-          await browser.scripting.executeScript({
-            target: { tabId: tabs[0].id },
-            func: (suggestions: Record<string, string>) => {
-              console.log('Nillion Autofill: Starting form detection...');
+      // Sub-step 3: Inject and execute autofill script
+      await addSubStep(activityId, 'Injecting autofill script into page', 'in_progress');
+      
+      // Use chrome.scripting.executeScript for Manifest V3
+      if (browser.scripting) {
+        const result = await browser.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          func: (suggestions: Record<string, string>) => {
+            console.log('Nillion Autofill: Starting form detection...');
+            
+            const fieldMappings: Record<string, string[]> = {
+              firstName: ['firstname', 'first_name', 'fname', 'given-name'],
+              lastName: ['lastname', 'last_name', 'lname', 'family-name', 'surname'],
+              email: ['email', 'email_address', 'user_email', 'mail'],
+              phone: ['phone', 'telephone', 'mobile', 'phone_number', 'tel'],
+              street: ['address', 'street', 'address1', 'street_address'],
+              city: ['city', 'locality'],
+              state: ['state', 'province', 'region'],
+              zipCode: ['zip', 'zipcode', 'postal_code', 'postcode'],
+              country: ['country'],
+              company: ['company', 'organization', 'employer'],
+              jobTitle: ['job_title', 'title', 'position'],
+              website: ['website', 'url'],
+              dateOfBirth: ['date_of_birth', 'dob', 'birthday']
+            };
+            
+            let filledCount = 0;
+            const inputs = document.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach((input: Element) => {
+              const inputElement = input as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+              if (inputElement.type === 'password' || inputElement.type === 'hidden') return;
               
-              const fieldMappings: Record<string, string[]> = {
-                firstName: ['firstname', 'first_name', 'fname', 'given-name'],
-                lastName: ['lastname', 'last_name', 'lname', 'family-name', 'surname'],
-                email: ['email', 'email_address', 'user_email', 'mail'],
-                phone: ['phone', 'telephone', 'mobile', 'phone_number', 'tel'],
-                street: ['address', 'street', 'address1', 'street_address'],
-                city: ['city', 'locality'],
-                state: ['state', 'province', 'region'],
-                zipCode: ['zip', 'zipcode', 'postal_code', 'postcode'],
-                country: ['country'],
-                company: ['company', 'organization', 'employer'],
-                jobTitle: ['job_title', 'title', 'position'],
-                website: ['website', 'url'],
-                dateOfBirth: ['date_of_birth', 'dob', 'birthday']
-              };
+              const attributes = [
+                inputElement.name,
+                inputElement.id,
+                inputElement.getAttribute('data-field'),
+                inputElement.getAttribute('data-name'),
+                (inputElement as HTMLInputElement).placeholder?.toLowerCase(),
+                inputElement.getAttribute('autocomplete')
+              ].filter(Boolean);
               
-              let filledCount = 0;
-              const inputs = document.querySelectorAll('input, textarea, select');
-              
-              inputs.forEach((input: Element) => {
-                const inputElement = input as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-                if (inputElement.type === 'password' || inputElement.type === 'hidden') return;
+              for (const attr of attributes) {
+                if (!attr) continue;
+                const normalizedAttr = attr.toLowerCase().replace(/[-_\s]/g, '');
                 
-                const attributes = [
-                  inputElement.name,
-                  inputElement.id,
-                  inputElement.getAttribute('data-field'),
-                  inputElement.getAttribute('data-name'),
-                  (inputElement as HTMLInputElement).placeholder?.toLowerCase(),
-                  inputElement.getAttribute('autocomplete')
-                ].filter(Boolean);
-                
-                for (const attr of attributes) {
-                  if (!attr) continue;
-                  const normalizedAttr = attr.toLowerCase().replace(/[-_\s]/g, '');
-                  
-                  for (const [field, patterns] of Object.entries(fieldMappings)) {
-                    for (const pattern of patterns) {
-                      const normalizedPattern = pattern.toLowerCase().replace(/[-_\s]/g, '');
-                      
-                      if (normalizedAttr.includes(normalizedPattern) || normalizedPattern.includes(normalizedAttr)) {
-                        const value = suggestions[field];
-                        if (value && !(inputElement as HTMLInputElement).value) {
-                          (inputElement as HTMLInputElement).value = value;
-                          inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-                          inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-                          filledCount++;
-                          console.log(`Filled ${attr} with ${value}`);
-                          return;
-                        }
+                for (const [field, patterns] of Object.entries(fieldMappings)) {
+                  for (const pattern of patterns) {
+                    const normalizedPattern = pattern.toLowerCase().replace(/[-_\s]/g, '');
+                    
+                    if (normalizedAttr.includes(normalizedPattern) || normalizedPattern.includes(normalizedAttr)) {
+                      const value = suggestions[field];
+                      if (value && !(inputElement as HTMLInputElement).value) {
+                        (inputElement as HTMLInputElement).value = value;
+                        inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+                        inputElement.dispatchEvent(new Event('change', { bubbles: true }));
+                        filledCount++;
+                        console.log(`Filled ${attr} with ${value}`);
+                        return;
                       }
                     }
                   }
                 }
-              });
-              
-              console.log(`Nillion Autofill: Filled ${filledCount} fields`);
-              
-              if (filledCount > 0) {
-                const notification = document.createElement('div');
-                notification.style.cssText = `
-                  position: fixed;
-                  top: 20px;
-                  right: 20px;
-                  background: #4CAF50;
-                  color: white;
-                  padding: 12px 20px;
-                  border-radius: 6px;
-                  z-index: 10000;
-                  font-family: Arial, sans-serif;
-                  font-size: 14px;
-                  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                `;
-                notification.textContent = `Nillion: Filled ${filledCount} form fields`;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                  if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                  }
-                }, 3000);
               }
-            },
-            args: [suggestions]
-          });
-        } else {
-          // Fallback for older API
-          const script = generateAutofillScript(personalInfo);
-          await browser.tabs.executeScript(tabs[0].id, {
-            code: script
-          });
-        }
+            });
+            
+            console.log(`Nillion Autofill: Filled ${filledCount} fields`);
+            
+            if (filledCount > 0) {
+              const notification = document.createElement('div');
+              notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                z-index: 10000;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+              `;
+              notification.textContent = `Nillion: Filled ${filledCount} form fields`;
+              document.body.appendChild(notification);
+              
+              setTimeout(() => {
+                if (notification.parentNode) {
+                  notification.parentNode.removeChild(notification);
+                }
+              }, 3000);
+            }
+            
+            return filledCount;
+          },
+          args: [suggestions]
+        });
         
-        setSuccess('Autofill executed on current page');
-        setTimeout(() => setSuccess(''), 3000);
+        const filledCount = result && result[0] && result[0].result ? result[0].result : 0;
+        await addSubStep(activityId, `Autofill completed: ${filledCount} fields filled`, 'completed', { filledCount });
       } else {
-        setError('No active tab found');
+        // Fallback for older API
+        await addSubStep(activityId, 'Using fallback autofill method', 'completed');
+        const script = generateAutofillScript(personalInfo);
+        await browser.tabs.executeScript(tabs[0].id, {
+          code: script
+        });
       }
+      
+      await addSubStep(activityId, 'Showing success notification', 'completed');
+      await completeActivity(activityId, 'success');
+      
+      setSuccess('Autofill executed on current page');
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       console.error('Autofill error:', err);
+      await addSubStep(activityId, `Error occurred: ${err instanceof Error ? err.message : 'Unknown error'}`, 'failed');
+      await completeActivity(activityId, 'failed');
       setError('Failed to execute autofill. Make sure you have permission for this page.');
     }
   };

@@ -52,7 +52,7 @@
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/your-username/nillion-extension.git
+   git clone https://github.com/ayushsingh82/nillion-extension.git
    cd nillion-extension
    ```
 
