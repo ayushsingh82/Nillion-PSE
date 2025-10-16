@@ -6,6 +6,9 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Nillion](https://img.shields.io/badge/Nillion-FF6B6B?logo=blockchain&logoColor=white)](https://nillion.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/ayushsingh82/Nillion-PSE)
+
+**🔗 [GitHub Repository](https://github.com/ayushsingh82/Nillion-PSE)** | **📖 [Activity Log Guide](./ACTIVITY_LOG_GUIDE.md)** | **📊 [Features Documentation](./ACTIVITY_LOG_FEATURES.md)**
 
 ---
 
@@ -35,18 +38,18 @@ Securely store personal information locally and automatically fill forms across 
 
 ### Installation
 
-\`\`\`bash
+```bash
 # Clone and install
-git clone https://github.com/ayushsingh82/extension2.git
-cd extension2
+git clone https://github.com/ayushsingh82/Nillion-PSE.git
+cd Nillion-PSE
 npm install
 npm run build
-\`\`\`
+```
 
 Load in browser:
-1. Open Chrome/Edge → \`chrome://extensions/\`
+1. Open Chrome/Edge → `chrome://extensions/`
 2. Enable "Developer mode"
-3. Click "Load unpacked" → Select \`dist\` folder
+3. Click "Load unpacked" → Select `dist` folder
 
 ### First Use
 
@@ -128,23 +131,23 @@ Load in browser:
 Every operation is tracked with granular sub-steps:
 
 **Document Creation** (4 sub-steps)
-\`\`\`
+```
 1. ✅ Generating unique document ID
 2. ✅ Creating document structure
 3. ✅ Storing document in secure storage
 4. ✅ Logging activity
 ⏱️ Duration: 234ms
-\`\`\`
+```
 
 **Autofill Execution** (5 sub-steps)
-\`\`\`
+```
 1. ✅ Getting active tab
 2. ✅ Preparing autofill data (8 fields)
 3. ✅ Injecting autofill script
 4. ✅ Autofill completed (5 fields filled)
 5. ✅ Showing notification
 ⏱️ Duration: 156ms
-\`\`\`
+```
 
 ### Activity Types
 
@@ -158,7 +161,7 @@ Every operation is tracked with granular sub-steps:
 ### Export Formats
 
 **JSON Export** - Complete data with all metadata
-\`\`\`json
+```json
 {
   "id": "abc123",
   "type": "DOCUMENT_CREATED",
@@ -168,13 +171,13 @@ Every operation is tracked with granular sub-steps:
   "duration": 234,
   "subSteps": [...]
 }
-\`\`\`
+```
 
 **CSV Export** - Spreadsheet compatible
-\`\`\`
+```
 ID, Timestamp, Date, Type, Description, Status, Duration, Sub Steps
 abc123, 1697472000000, 2025-10-16, DOCUMENT_CREATED, "Creating document", success, 234, "1. Generating ID; 2. Creating structure..."
-\`\`\`
+```
 
 ---
 
@@ -188,7 +191,7 @@ abc123, 1697472000000, 2025-10-16, DOCUMENT_CREATED, "Creating document", succes
 
 ### Project Structure
 
-\`\`\`
+```
 src/
 ├── components/
 │   ├── Dashboard.tsx          # Main interface
@@ -205,7 +208,7 @@ src/
     ├── popup/                 # Extension popup
     ├── background/            # Service worker
     └── options/               # Settings page
-\`\`\`
+```
 
 ---
 
@@ -218,11 +221,11 @@ src/
 - **Minimal Permissions** - Only essential browser APIs used
 
 ### Required Permissions
-- \`storage\` - Local data storage
-- \`activeTab\` - Current page access for autofill
-- \`scripting\` - Form autofill injection
-- \`unlimitedStorage\` - Documents and logs storage
-- \`host_permissions\` - Web page script execution
+- `storage` - Local data storage
+- `activeTab` - Current page access for autofill
+- `scripting` - Form autofill injection
+- `unlimitedStorage` - Documents and logs storage
+- `host_permissions` - Web page script execution
 
 ---
 
@@ -267,9 +270,9 @@ src/
 We welcome contributions! 
 
 1. Fork the repository
-2. Create feature branch: \`git checkout -b feature/amazing-feature\`
-3. Commit changes: \`git commit -m 'Add amazing feature'\`
-4. Push to branch: \`git push origin feature/amazing-feature\`
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
 5. Open Pull Request
 
 ---
