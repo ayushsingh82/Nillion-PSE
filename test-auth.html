@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Nillion Extension Authentication</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .step { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .step h3 { margin-top: 0; color: #333; }
+        .console { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 3px; font-family: monospace; }
+        code { background: #e0e0e0; padding: 2px 4px; border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Nillion Extension Authentication Test</h1>
+    
+    <div class="step">
+        <h3>Step 1: Install & Load Extension</h3>
+        <ol>
+            <li>Open Chrome/Edge and go to <code>chrome://extensions/</code></li>
+            <li>Enable "Developer mode" in the top right</li>
+            <li>Click "Load unpacked" and select the <code>dist</code> folder</li>
+            <li>The Nillion extension should appear in your extensions list</li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Open Extension & Check Console</h3>
+        <ol>
+            <li>Click the Nillion extension icon in the toolbar</li>
+            <li>Right-click on the extension popup and select "Inspect"</li>
+            <li>Go to the Console tab to see debug logs</li>
+            <li>Look for messages starting with <code>=== Auth Debug ===</code></li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Test Authentication Setup</h3>
+        <ol>
+            <li>If no authentication is set up, you should see the "Setup Authentication" button</li>
+            <li>Click it and try setting up a passphrase (e.g., "test123")</li>
+            <li>Watch the console for debug messages about crypto operations</li>
+            <li>After setup, the extension should show "Lock Extension" button</li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>Step 4: Test Lock/Unlock</h3>
+        <ol>
+            <li>Click "Lock Extension" - the UI should be locked</li>
+            <li>Try unlocking with your passphrase</li>
+            <li>Watch console for authentication flow messages</li>
+            <li>If unlock fails, check console for crypto-related errors</li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>Step 5: Debug Issues</h3>
+        <p>If authentication isn't working, look for these in the console:</p>
+        <div class="console">
+        ❌ crypto.getRandomValues is not a function<br>
+        ❌ crypto.subtle is undefined<br>
+        ❌ Cannot read properties of undefined (reading 'digest')<br>
+        <br>
+        ✅ Using fallback crypto.getRandomValues<br>
+        ✅ Using Web Crypto API<br>
+        ✅ Auth setup successful<br>
+        ✅ Passphrase verified successfully
+        </div>
+        
+        <p>If you see crypto errors, the fallback methods should kick in automatically.</p>
+        <p>Use the "Disable Lock" button to reset authentication if needed.</p>
+    </div>
+
+    <div class="step">
+        <h3>Expected Console Flow</h3>
+        <div class="console">
+=== Auth Debug ===<br>
+Checking auth and loading data...<br>
+=== Checking if auth is enabled ===<br>
+Auth enabled result: false<br>
+=== Getting auth method ===<br>
+Auth method: null<br>
+Auth is not enabled, showing setup option<br>
+<br>
+[After setting up authentication]<br>
+=== Setting up auth ===<br>
+Method: passphrase, Passphrase provided: true<br>
+Generating salt...<br>
+Using fallback crypto.getRandomValues<br>
+Salt generated successfully<br>
+Hashing passphrase...<br>
+Using Web Crypto API<br>
+Hash generated successfully<br>
+Saving auth config...<br>
+Auth setup successful<br>
+        </div>
+    </div>
+
+    <p><strong>🎯 Goal:</strong> Verify that the authentication system works without crypto-related errors and that the "lock not working" issue is resolved.</p>
+</body>
+</html>

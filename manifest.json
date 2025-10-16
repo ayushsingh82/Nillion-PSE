@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "Nillion Private Storage Manager",
+  "version": "1.0.0",
+  "description": "Manage your Nillion Private Storage User Owned Collections with full control over DIDs, data, and app permissions",
+  "options_ui": {
+    "page": "src/pages/options/index.html"
+  },
+  "background": {
+    "service_worker": "src/pages/background/index.ts",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "src/pages/popup/index.html",
+    "default_icon": {
+      "32": "public/icon-32.png"
+    }
+  },
+  "icons": {
+    "128": "public/icon-128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "unlimitedStorage"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "<all_urls>"
+      ],
+      "js": [
+        "src/pages/content/index.tsx"
+      ],
+      "css": [
+        "public/contentStyle.css"
+      ]
+    }
+  ],
+  "devtools_page": "src/pages/devtools/index.html",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "public/contentStyle.css",
+        "public/icon-128.png",
+        "public/icon-32.png"
+      ],
+      "matches": []
+    }
+  ]
+}
