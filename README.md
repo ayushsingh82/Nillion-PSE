@@ -1,314 +1,301 @@
 # 🔐 Nillion Private Storage Manager
 
-> A comprehensive browser extension for managing your Nillion Private Storage User Owned Collections with full control over DIDs, data, app permissions, and personal information.
+> A powerful browser extension for managing your Nillion Private Storage with complete control over decentralized identity, encrypted documents, permissions, and personal data.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Nillion](https://img.shields.io/badge/Nillion-FF6B6B?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMjIgMjJIMkwxMiAyWiIgZmlsbD0iY3VycmVudENvbG9yIi8+Cjwvc3ZnPgo=)](https://nillion.com/)
+[![Nillion](https://img.shields.io/badge/Nillion-FF6B6B?logo=blockchain&logoColor=white)](https://nillion.com/)
 
-## 🌟 Features
+---
 
-### 🔑 **Identity Management**
-- **Secure DID Generation**: Create and manage your Nillion Decentralized Identity
-- **Keypair Management**: Automatic generation and secure storage of cryptographic keys
-- **QR Code Sharing**: Display your DID as QR code for easy app connections
-- **Identity Persistence**: Reliable storage and retrieval across browser sessions
+## ✨ Key Features
 
-### 📄 **Document Storage**
-- **Private Document Management**: Store, retrieve, and manage encrypted documents
-- **Collection Organization**: Organize documents in User Owned Collections
-- **CRUD Operations**: Full create, read, update, delete functionality
-- **Metadata Tracking**: Automatic timestamping and ownership tracking
+### 🆔 **Decentralized Identity Management**
+Create and manage your Nillion DID with cryptographic keypairs. Share your identity via QR codes for seamless app connections. Full control over your digital identity with secure storage and retrieval.
 
-### 🔐 **Security & Authentication**
-- **Biometric/Passphrase Lock**: Secure your extension with biometric or passphrase authentication
-- **Crypto Compatibility**: Robust fallback systems for browser crypto APIs
-- **Auto-lock Features**: Automatic security when extension is closed
-- **Debug Tools**: Comprehensive debugging for troubleshooting
+### 📄 **Private Document Storage**
+Store, manage, and organize encrypted documents in User Owned Collections. Full CRUD operations with automatic metadata tracking, timestamps, and ownership verification.
 
-### 🤝 **Permission Management**
-- **Access Control**: Grant and revoke permissions for external applications
-- **Granular Permissions**: Control read, write, and execute access
-- **Permission Tracking**: Monitor who has access to your data
-- **Easy Revocation**: One-click permission removal
+### 🔐 **Advanced Security**
+Protect your extension with biometric authentication or passphrase lock. Robust fallback systems, auto-lock features, and comprehensive security monitoring keep your data safe.
 
-### 📊 **Activity Monitoring**
-- **Comprehensive Logging**: Track all document and permission activities
-- **Real-time Updates**: Live activity feed with timestamps
-- **Activity Types**: Document creation, deletion, permission changes
-- **Audit Trail**: Complete history of all extension activities
+### 🤝 **Granular Permission Control**
+Grant and revoke read, write, and execute permissions for external applications. Monitor access in real-time with one-click permission removal and complete audit trails.
 
-### 👤 **Personal Information & Autofill**
-- **Secure Profile Storage**: Store personal information locally and securely
-- **Smart Autofill**: Automatically fill forms across websites
-- **Field Recognition**: Intelligent detection of 50+ common form field patterns
-- **One-Click Fill**: Instant form completion with visual feedback
-- **Data Privacy**: All information stored locally, never transmitted
+### 📊 **Enterprise-Grade Activity Logging**
+Track every operation with detailed sub-steps, duration metrics, and status indicators. Export logs in JSON or CSV for analysis. Advanced filtering and search capabilities with real-time statistics dashboard.
+
+### 👤 **Smart Autofill System**
+Securely store personal information locally and automatically fill forms across the web. Intelligent recognition of 50+ form field patterns with instant one-click completion and visual feedback.
+
+---
 
 ## 🚀 Quick Start
 
 ### Installation
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/ayushsingh82/nillion-extension.git
-   cd nillion-extension
-   ```
+\`\`\`bash
+# Clone and install
+git clone https://github.com/ayushsingh82/extension2.git
+cd extension2
+npm install
+npm run build
+\`\`\`
 
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+Load in browser:
+1. Open Chrome/Edge → \`chrome://extensions/\`
+2. Enable "Developer mode"
+3. Click "Load unpacked" → Select \`dist\` folder
 
-3. **Build the Extension**
-   ```bash
-   npm run build
-   ```
+### First Use
 
-4. **Load in Browser**
-   - Open Chrome/Edge and go to `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked" and select the `dist` folder
-   - The Nillion extension will appear in your extensions list
+1. **Create Identity** - Generate your DID with one click
+2. **Add Documents** - Store encrypted documents securely
+3. **Manage Permissions** - Control who accesses your data
+4. **View Activity** - Monitor all operations with detailed logs
 
-### First Time Setup
+---
 
-1. **Create Identity**
-   - Click the extension icon
-   - Click "Create Identity" to generate your DID
-   - Your identity will be automatically saved
+## 🎯 Core Capabilities
 
-2. **Setup Security (Optional)**
-   - Click "Setup Authentication"
-   - Choose passphrase or biometric authentication
-   - Configure your preferred security method
+### 📱 Document Management
 
-3. **Add Personal Info (Optional)**
-   - Go to the "Profile" tab
-   - Click "Add Personal Info"
-   - Fill in your details for autofill functionality
+**Create Documents**
+- Navigate to Documents tab → Add Document
+- Enter title and content → Save
+- Automatic encryption and metadata tracking
 
-## 📱 Usage
+**Manage Documents**
+- View all documents with details
+- Edit or delete with confirmation
+- Track creation time and ownership
 
-### Managing Documents
+### 🔑 Permission System
 
-**Add a Document:**
-1. Go to "Documents" tab
-2. Click "Add Document"
-3. Enter title and content
-4. Click "Save Document"
+**Grant Access**
+- Select document and grantee DID
+- Choose permissions: read, write, execute
+- Instant grant with activity logging
 
-**View/Edit Documents:**
-- Click on any document to view details
-- Use edit/delete buttons for modifications
+**Monitor & Revoke**
+- View all active permissions
+- One-click revocation
+- Complete audit trail
 
-### Managing Permissions
+### 🔄 Smart Autofill
 
-**Grant Access:**
-1. Go to "Permissions" tab
-2. Click "Grant Permission"
-3. Enter grantee DID and select permissions
-4. Click "Grant Access"
+**Setup**
+- Profile tab → Add personal information
+- Fill name, email, address, company, etc.
+- Save securely in local storage
 
-**Revoke Access:**
-- Find the permission in the list
-- Click "Revoke" button
+**Use**
+- Visit any website with forms
+- Open extension → Profile tab
+- Click "🔄 Autofill Page"
+- Instant form completion with feedback
 
-### Using Autofill
+### 📊 Activity Monitoring
 
-**Setup:**
-1. Go to "Profile" tab
-2. Add your personal information
-3. Click "Save"
+**View Activities**
+- Activity tab shows all operations
+- Color-coded status indicators
+- Click to expand sub-steps and details
 
-**Use:**
-1. Navigate to any website with forms
-2. Open the extension
-3. Go to "Profile" tab
-4. Click "🔄 Autofill Page"
+**Filter & Search**
+- Search by text across all activities
+- Filter by type (Document, Permission, Autofill, etc.)
+- Filter by status (Success, Failed, Warning)
 
-## 🛠️ Development
+**Statistics Dashboard**
+- Total operations count
+- Today's and weekly activity
+- Average operation duration
+- Status breakdown visualization
 
-### Tech Stack
+**Export Logs**
+- Download as JSON (full data) or CSV (spreadsheet)
+- Automatic timestamped filenames
+- Perfect for compliance and analysis
 
-- **Frontend**: React 18.2.0 + TypeScript
-- **Bundler**: Vite 4.5.0 with custom extension configuration
-- **Styling**: Tailwind CSS 3.3.0
-- **Nillion SDK**: @nillion/secretvaults, @nillion/nuc
-- **Browser APIs**: WebExtension Polyfill for cross-browser compatibility
+---
+
+## 🎨 Activity Log Features
+
+### Detailed Sub-Step Tracking
+
+Every operation is tracked with granular sub-steps:
+
+**Document Creation** (4 sub-steps)
+\`\`\`
+1. ✅ Generating unique document ID
+2. ✅ Creating document structure
+3. ✅ Storing document in secure storage
+4. ✅ Logging activity
+⏱️ Duration: 234ms
+\`\`\`
+
+**Autofill Execution** (5 sub-steps)
+\`\`\`
+1. ✅ Getting active tab
+2. ✅ Preparing autofill data (8 fields)
+3. ✅ Injecting autofill script
+4. ✅ Autofill completed (5 fields filled)
+5. ✅ Showing notification
+⏱️ Duration: 156ms
+\`\`\`
+
+### Activity Types
+
+- 🆔 **Identity Operations** - Created, Imported, Exported
+- 📄 **Documents** - Created, Read, Deleted
+- ✅ **Permissions** - Granted, Revoked
+- 🔄 **Autofill** - Execution with field counts
+- 💾 **Data Export** - JSON/CSV downloads
+- 🔒 **Security** - Authentication changes
+
+### Export Formats
+
+**JSON Export** - Complete data with all metadata
+\`\`\`json
+{
+  "id": "abc123",
+  "type": "DOCUMENT_CREATED",
+  "description": "Creating document",
+  "status": "success",
+  "timestamp": 1697472000000,
+  "duration": 234,
+  "subSteps": [...]
+}
+\`\`\`
+
+**CSV Export** - Spreadsheet compatible
+\`\`\`
+ID, Timestamp, Date, Type, Description, Status, Duration, Sub Steps
+abc123, 1697472000000, 2025-10-16, DOCUMENT_CREATED, "Creating document", success, 234, "1. Generating ID; 2. Creating structure..."
+\`\`\`
+
+---
+
+## 🛠️ Technical Stack
+
+- **Frontend**: React 18 + TypeScript
+- **Build**: Vite 4.5 with custom extension config
+- **Styling**: Tailwind CSS 3.3
+- **Blockchain**: Nillion SDK (@nillion/nuc, @nillion/secretvaults)
+- **APIs**: WebExtension Polyfill for cross-browser support
 
 ### Project Structure
 
-```
+\`\`\`
 src/
-├── components/           # React components
-│   ├── Dashboard.tsx    # Main dashboard component
-│   ├── AuthComponents.tsx # Authentication modals
-│   └── PersonalInfoTab.tsx # Personal info management
-├── services/            # Core services
-│   ├── nillionService.ts # Main Nillion integration
-│   ├── authService.ts   # Authentication management
-│   ├── personalInfoService.ts # Personal info & autofill
-│   └── secureStorage.ts # Identity storage
-├── pages/               # Extension pages
-│   ├── popup/          # Extension popup
-│   ├── background/     # Service worker
-│   └── options/        # Extension options
-└── types/              # TypeScript type definitions
-```
+├── components/
+│   ├── Dashboard.tsx          # Main interface
+│   ├── ActivityLogTab.tsx     # Activity monitoring UI
+│   ├── PersonalInfoTab.tsx    # Profile & autofill
+│   └── AuthComponents.tsx     # Security modals
+├── services/
+│   ├── realNillionService.ts  # Core Nillion integration
+│   ├── activityLogger.ts      # Advanced logging system
+│   ├── authService.ts         # Authentication
+│   ├── personalInfoService.ts # Autofill engine
+│   └── secureStorage.ts       # Identity management
+└── pages/
+    ├── popup/                 # Extension popup
+    ├── background/            # Service worker
+    └── options/               # Settings page
+\`\`\`
 
-### Development Commands
-
-```bash
-# Development build with watch mode
-npm run dev
-
-# Production build
-npm run build
-
-# Type checking
-npm run type-check
-
-# Linting
-npm run lint
-
-# Preview built extension
-npm run preview
-```
-
-### Configuration Files
-
-- `manifest.json` - Extension manifest (Manifest V3)
-- `vite.config.ts` - Vite bundler configuration
-- `tailwind.config.cjs` - Tailwind CSS configuration
-- `tsconfig.json` - TypeScript configuration
-
-## 🔧 Features Deep Dive
-
-### Authentication System
-
-The extension includes a robust authentication system with:
-
-- **Crypto API Fallbacks**: Automatic fallback for browsers with limited crypto support
-- **Secure Hashing**: SHA-256 with salt for passphrase storage
-- **Biometric Support**: Integration with browser biometric APIs
-- **Session Management**: Automatic lock/unlock functionality
-
-### Personal Information Management
-
-Comprehensive personal data management with:
-
-- **Structured Storage**: Organized fields for all personal information
-- **Smart Autofill**: Advanced field recognition and form filling
-- **Privacy First**: All data stored locally, never transmitted
-- **Field Mapping**: Support for 50+ common form field patterns
-
-### Nillion Integration
-
-Real integration with Nillion's Private Storage:
-
-- **Secret Vaults**: Direct integration with @nillion/secretvaults
-- **User Client**: Full user client functionality for data operations
-- **Permission System**: Native support for Nillion's permission model
-- **Real Data**: No mock data - actual blockchain operations
+---
 
 ## 🔒 Security & Privacy
 
 ### Data Protection
+- **100% Local Storage** - No cloud, no servers, no external transmission
+- **Browser-Native Encryption** - Leverages built-in security APIs
+- **User-Controlled** - Complete ownership of all data and permissions
+- **Minimal Permissions** - Only essential browser APIs used
 
-- **Local Storage Only**: All data stored in browser extension storage
-- **No Cloud Sync**: Information never leaves your device
-- **Encryption**: Browser-native encryption for sensitive data
-- **User Control**: Complete control over data sharing and permissions
+### Required Permissions
+- \`storage\` - Local data storage
+- \`activeTab\` - Current page access for autofill
+- \`scripting\` - Form autofill injection
+- \`unlimitedStorage\` - Documents and logs storage
+- \`host_permissions\` - Web page script execution
 
-### Extension Permissions
+---
 
-The extension requires minimal permissions:
+## 📚 Documentation
 
-- `storage` - Store user data locally
-- `activeTab` - Access current page for autofill
-- `unlimitedStorage` - Store documents and activity logs
+- **[ACTIVITY_LOG_FEATURES.md](./ACTIVITY_LOG_FEATURES.md)** - Complete activity logging documentation
+- **[ACTIVITY_LOG_GUIDE.md](./ACTIVITY_LOG_GUIDE.md)** - Quick start guide with examples
+- **[LICENSE](./LICENSE)** - MIT License
 
-## 🐛 Troubleshooting
+---
 
-### Common Issues
+## 🎯 Use Cases
 
-**Extension not loading:**
-- Refresh the extension in Chrome's extension management
-- Check browser console for errors
-- Ensure all dependencies are installed
+### Personal Data Management
+- Store sensitive documents securely
+- Control access with fine-grained permissions
+- Track all document operations
+- Export activity for personal records
 
-**Authentication not working:**
-- Use "Skip Auth (Debug)" button for testing
-- Check crypto API compatibility in browser console
-- Clear auth storage and re-setup
+### Developer Tools
+- Test Nillion integration locally
+- Monitor API calls and operations
+- Debug with detailed sub-step logs
+- Export data for analysis
 
-**Autofill not working:**
-- Ensure extension has permission for the current site
-- Check that form fields are visible and editable
-- Try refreshing the page and attempting again
+### Compliance & Audit
+- Complete activity audit trail
+- Export logs in multiple formats
+- Track who accessed what and when
+- Monitor operation success rates
 
-**Identity keeps resetting:**
-- Check browser storage using the 🐛 debug button
-- Ensure extension isn't being reset by browser
-- Verify identity persistence in storage logs
+### Productivity
+- Auto-fill forms instantly
+- Secure personal information storage
+- Quick document access
+- Streamlined permission management
 
-### Debug Tools
-
-The extension includes comprehensive debugging:
-
-- **Storage Inspector**: 🐛 button to view all stored data
-- **Console Logging**: Detailed logs for all operations
-- **Auth Debug**: Step-by-step authentication flow logging
-- **Error Handling**: Comprehensive error reporting
+---
 
 ## 🤝 Contributing
 
-### Getting Started
+We welcome contributions! 
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Add tests if applicable
-5. Commit your changes: `git commit -m 'Add amazing feature'`
-6. Push to the branch: `git push origin feature/amazing-feature`
-7. Open a Pull Request
+2. Create feature branch: \`git checkout -b feature/amazing-feature\`
+3. Commit changes: \`git commit -m 'Add amazing feature'\`
+4. Push to branch: \`git push origin feature/amazing-feature\`
+5. Open Pull Request
 
-### Development Guidelines
-
-- Follow TypeScript best practices
-- Use meaningful commit messages
-- Add JSDoc comments for functions
-- Test thoroughly across different browsers
-- Maintain backward compatibility
-
-### Code Style
-
-- Use TypeScript for all new code
-- Follow ESLint configuration
-- Use meaningful variable names
-- Add error handling for all async operations
-- Include user feedback for all actions
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
 
 ## 🙏 Acknowledgments
 
-- [Nillion](https://nillion.com/) for the Private Storage infrastructure
+Built with the [Nillion](https://nillion.com/) Private Storage infrastructure for decentralized, secure data management.
+
+---
 
 ## 📞 Support
 
-If you encounter any issues or need help:
+- 📖 Check documentation files
+- 🐛 Use built-in debug tools (🐛 button)
+- 📊 Review activity logs for operation details
+- 💾 Export logs for detailed analysis
+- 🔍 Open GitHub issue with exported logs if needed
 
-1. Check the [troubleshooting section](#-troubleshooting)
-2. Review the browser console for error messages
-3. Use the built-in debug tools (🐛 button)
-4. Open an issue on GitHub with detailed information
+---
 
-**Built with ❤️ for the Nillion ecosystem**
+**Built with ❤️ for secure, private, user-controlled data in the decentralized web.**
 
-*Secure, private, and user-controlled data management for the decentralized web.*
-
+*Nillion Private Storage Manager - Your data, your control, your privacy.*
