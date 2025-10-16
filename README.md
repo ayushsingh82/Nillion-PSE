@@ -2,15 +2,7 @@
 
 > A powerful browser extension for managing your Nillion Private Storage with complete control over decentralized identity, encrypted documents, permissions, and personal data.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Nillion](https://img.shields.io/badge/Nillion-FF6B6B?logo=blockchain&logoColor=white)](https://nillion.com/)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/ayushsingh82/Nillion-PSE)
-
-**🔗 [GitHub Repository](https://github.com/ayushsingh82/Nillion-PSE)** | **📖 [Activity Log Guide](./ACTIVITY_LOG_GUIDE.md)** | **📊 [Features Documentation](./ACTIVITY_LOG_FEATURES.md)**
-
----
+**🔗 [GitHub Repository](https://github.com/ayushsingh82/Nillion-PSE)**
 
 ## ✨ Key Features
 
